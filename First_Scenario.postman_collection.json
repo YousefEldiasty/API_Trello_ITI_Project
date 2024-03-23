@@ -1,0 +1,2389 @@
+{
+	"info": {
+		"_postman_id": "cbf1fa2d-d47d-43b3-93ba-8a29d8933192",
+		"name": "First_Scenario Copy",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33009576",
+		"_collection_link": "https://cloudy-robot-745561.postman.co/workspace/Trello_ITI_Graduation~5487318a-478e-4234-b475-28752082f70a/collection/33009576-cbf1fa2d-d47d-43b3-93ba-8a29d8933192?action=share&source=collection_link&creator=33009576"
+	},
+	"item": [
+		{
+			"name": "Create / Get / Update / Move",
+			"item": [
+				{
+					"name": "1- Create Board 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// set board_id ",
+									"pm.environment.set(\"board_1_id\",pm.response.json().id);",
+									"",
+									"// Verify the request method is POST",
+									"pm.test(\"Successful POST request\", function () {",
+									"    pm.actualMethod = pm.request.method;",
+									"    pm.expect(pm.actualMethod).to.eq(\"POST\");",
+									"});",
+									"",
+									"// Test for Successful Creation",
+									"pm.test(\"Verify successful board creation\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.response.to.have.jsonBody();",
+									"});",
+									"",
+									"// Verify the API response is JSON Format",
+									"pm.test(\"Content-Type is JSON in header\", function () {",
+									"    pm.response.to.have.header(\"Content-Type\",\"application/json; charset=utf-8\");",
+									"});",
+									"",
+									"// Test for Response Content",
+									"pm.test(\"Verify response content\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property(\"id\");",
+									"    pm.expect(jsonData).to.have.property(\"name\");",
+									"    pm.expect(jsonData).to.have.property(\"desc\");",
+									"    pm.expect(jsonData).to.have.property(\"closed\");",
+									"    pm.expect(jsonData).to.have.property(\"descData\");",
+									"    pm.expect(jsonData).to.have.property(\"idOrganization\");",
+									"    pm.expect(jsonData).to.have.property(\"idEnterprise\");",
+									"    pm.expect(jsonData).to.have.property(\"pinned\");",
+									"    pm.expect(jsonData).to.have.property(\"url\");",
+									"    pm.expect(jsonData).to.have.property(\"shortUrl\");",
+									"    pm.expect(jsonData).to.have.property(\"prefs\");",
+									"});",
+									"",
+									"// Schema Validation",
+									"pm.test(\"Schema Validation\", function () {",
+									"    var schema = {",
+									"        type: \"object\",",
+									"        properties: {",
+									"            id: { type: \"string\" },",
+									"            name: { type: \"string\" , minLength: 1 },",
+									"            desc: { type: \"string\" },",
+									"            defaultLabels: { type: \"boolean\" },",
+									"            defaultLists: { type: \"boolean\" },",
+									"            idOrganization: { type: \"string\", pattern: \"^[0-9a-fA-F]{24}$\" },",
+									"            idBoardSource: { type: \"string\", pattern: \"^[0-9a-fA-F]{24}$\" },",
+									"            keepFromSource: { type: \"string\", enum: [\"cards\", \"none\"] },",
+									"            powerUps: { type: \"string\", enum: [\"all\", \"calendar\", \"cardAging\", \"recap\", \"voting\"] },",
+									"            prefs_permissionLevel: { type: \"string\", enum: [\"org\", \"private\", \"public\"] },",
+									"            prefs_voting: { type: \"string\", enum: [\"disabled\", \"members\", \"observers\", \"org\", \"public\"] },",
+									"            prefs_comments: { type: \"string\", enum: [\"disabled\", \"members\", \"observers\", \"org\", \"public\"] },",
+									"            prefs_invitations: { type: \"string\", enum: [\"admins\", \"members\"] },",
+									"            prefs_selfJoin: { type: \"boolean\" },",
+									"            prefs_cardCovers: { type: \"boolean\" },",
+									"            prefs_background: { type: \"string\", enum: [\"blue\", \"orange\", \"green\", \"red\", \"purple\", \"pink\", \"lime\", \"sky\", \"grey\"] },",
+									"            prefs_cardAging: { type: \"string\", enum: [\"pirate\", \"regular\"] }",
+									"        },",
+									"        required: [\"id\", \"name\"]",
+									"    };",
+									"    pm.response.to.have.jsonSchema(schema);",
+									"});",
+									"// all those covered in schema ",
+									"//-----------------------",
+									"/*",
+									"pm.test(\"Verify name parameter\", function () {",
+									"    var responseData = pm.response.json();",
+									"    pm.expect(responseData.name.length).to.be.within(1, 16384);",
+									"});",
+									"",
+									"// Test for desc parameter",
+									"pm.test(\"Verify desc parameter\", function () {",
+									"    var responseData = pm.response.json();",
+									"    pm.expect(responseData.desc.length).to.be.within(0, 16384);",
+									"});",
+									"",
+									"// Test for idOrganization parameter",
+									"pm.test(\"Verify idOrganization parameter\", function () {",
+									"    var responseData = pm.response.json();",
+									"    pm.expect(responseData.idOrganization).to.match(/^[0-9a-fA-F]{24}$/);",
+									"});",
+									"// Test for prefs_permissionLevel parameter",
+									"pm.test(\"Verify prefs_permissionLevel parameter\", function () {",
+									"    var responseData = pm.response.json();",
+									"    pm.expect(responseData.prefs.permissionLevel).to.be.oneOf([\"org\", \"private\", \"public\"]);",
+									"});",
+									"",
+									"// Test for prefs_voting parameter",
+									"pm.test(\"Verify prefs_voting parameter\", function () {",
+									"    var responseData = pm.response.json();",
+									"    pm.expect(responseData.prefs.voting).to.be.oneOf([\"disabled\", \"members\", \"observers\", \"org\", \"public\"]);",
+									"});",
+									"// Test for prefs_comments parameter",
+									"pm.test(\"Verify prefs_comments parameter\", function () {",
+									"    var prefs = pm.response.json().prefs;",
+									"    pm.expect(prefs.comments).to.be.oneOf([\"disabled\", \"members\", \"observers\", \"org\", \"public\"]);",
+									"});",
+									"",
+									"// Test for prefs_invitations parameter",
+									"pm.test(\"Verify prefs_invitations parameter\", function () {",
+									"    var prefs = pm.response.json().prefs;",
+									"    pm.expect(prefs.invitations).to.be.oneOf([\"admins\", \"members\"]);",
+									"});",
+									"",
+									"// Test for prefs_selfJoin parameter",
+									"pm.test(\"Verify prefs_selfJoin parameter\", function () {",
+									"    var prefs = pm.response.json().prefs;",
+									"    pm.expect(prefs.selfJoin).to.be.a('boolean');",
+									"});",
+									"",
+									"// Test for prefs_cardCovers parameter",
+									"pm.test(\"Verify prefs_cardCovers parameter\", function () {",
+									"    var prefs = pm.response.json().prefs;",
+									"    pm.expect(prefs.cardCovers).to.be.a('boolean');",
+									"});",
+									"",
+									"// Test for prefs_background parameter",
+									"pm.test(\"Verify prefs_background parameter\", function () {",
+									"    var prefs = pm.response.json().prefs;",
+									"    pm.expect(prefs.background).to.be.oneOf([\"blue\", \"orange\", \"green\", \"red\", \"purple\", \"pink\", \"lime\", \"sky\", \"grey\"]);",
+									"});",
+									"",
+									"// Test for prefs_cardAging parameter",
+									"pm.test(\"Verify prefs_cardAging parameter\", function () {",
+									"    var prefs = pm.response.json().prefs;",
+									"    pm.expect(prefs.cardAging).to.be.oneOf([\"pirate\", \"regular\"]);",
+									"});",
+									"*/",
+									"//-------------------------",
+									"",
+									"// Test for Parameter Validity",
+									"pm.test(\"Verify parameter validity\", function () {",
+									"    pm.expect(pm.request.url).to.match(/name=.+&/); // Ensure name parameter is followed by another parameter or end of URL",
+									"});",
+									"",
+									"/*",
+									"// defaultLists value missing in response",
+									"pm.test(\"Verify default lists NOT added when defaultLists is false\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    var defaultListsEnabled = jsonData.lists.length ; // Assuming 'lists' is an array of default lists",
+									"    pm.expect(defaultListsEnabled).to.equal(0);",
+									"});",
+									"*/",
+									"// verify length Boundry Value Analysis",
+									"pm.test(\"Verify maximum length of board name More than 0\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.name.length).to.be.at.least(0);",
+									"});",
+									"",
+									"// Test for Maximum Length",
+									"pm.test(\"Verify minimum length of board name less than or equal 16384\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.name.length).to.be.at.most(16384);",
+									"});",
+									"",
+									"// Test for blank Name Handling",
+									"pm.test(\"Verify blank board name handling\", function () {",
+									"    // Set the board name to blank",
+									"    var blankBoardName = \"\";",
+									"",
+									"    // Attempt to create a board with a blank name",
+									"    pm.sendRequest({",
+									"        url: 'https://api.trello.com/1/boards/?name='+blankBoardName+'&defaultLists=false&key=1c94aec7db5d68c59ea01ac03ccdc211&token=ATTA06878f4a0b91dd65a5f3d623b8b47fb802fe06b6b5342e5aea5e0127b39495eb0CC12AC1',",
+									"        method: 'POST',",
+									"        header: {",
+									"            'Content-Type': 'application/json'",
+									"        },",
+									"        body: {",
+									"            mode: 'raw',",
+									"            raw: JSON.stringify({ name: blankBoardName })",
+									"        }",
+									"    }, function (err, response) {",
+									"        // Verify that the response has a status code of 400 (Bad Request)",
+									"        pm.test(\"Verify response status code for Blank name\", function () {",
+									"            pm.expect(response.code).to.eql(400);",
+									"        });",
+									"",
+									"        // Verify that the response contains an error message indicating the issue with the blank name",
+									"        pm.test(\"Verify response error message for Blank name\", function () {",
+									"            pm.expect(response.status).to.eql(\"Bad Request\");",
+									"        });",
+									"    });",
+									"});",
+									"",
+									"// Test for Duplicate Name Handling",
+									"pm.test(\"Verify duplicate board name handling\", function () {",
+									"    // Create a board with a specific name",
+									"    var duplicateBoardName = pm.environment.get(\"board name\");",
+									"    // Attempt to create another board with the same name",
+									"    pm.sendRequest({",
+									"        url: 'https://api.trello.com/1/boards/?name='+duplicateBoardName+'&defaultLists=false&key=1c94aec7db5d68c59ea01ac03ccdc211&token=ATTA06878f4a0b91dd65a5f3d623b8b47fb802fe06b6b5342e5aea5e0127b39495eb0CC12AC1',",
+									"        method: 'POST',",
+									"        header: {",
+									"            'Content-Type': 'application/json'",
+									"        },",
+									"        body: {",
+									"            mode: 'raw',",
+									"            raw: JSON.stringify({ name: duplicateBoardName })",
+									"        }",
+									"    }, function (err, response) {",
+									"        console.log(response.json());",
+									"        var DuplicatedID = response.json().id;",
+									"        pm.environment.set(\"DuplicatedID\",response.json().id);",
+									"        pm.test(\"Verify response status code for duplicateBoardName\", function () {",
+									"            pm.expect(response).to.have.status(400); // Assuming a 400 Bad Request status code is returned for duplicate name",
+									"        });",
+									"        pm.test(\"Verify response error message for duplicateBoardName\", function () {",
+									"            pm.expect(response.json().error).to.eql(\"Board name already exists\");",
+									"        });",
+									"    });",
+									"});",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function getboardnameItem() {\r",
+									"    //var boardname = [\"Web project\", \"Mobile app project\", \"Machine Learning project\", \"Embedded system project\"];\r",
+									"    var boardname = [\"A\", \"B\", \"C\", \"D\"];\r",
+									"    // Check if boardname is an array and it's not empty\r",
+									"    if (Array.isArray(boardname) && boardname.length > 0) {\r",
+									"        var randomIndex = Math.floor(Math.random() * boardname.length);\r",
+									"        return boardname[randomIndex];\r",
+									"    } else {\r",
+									"        // Handle the case when boardname is empty or not an array\r",
+									"        return \"No board names available\";\r",
+									"    }\r",
+									"}\r",
+									"\r",
+									"// Make an environment variable called board name \r",
+									"pm.environment.set(\"board name\", getboardnameItem());\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey"
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/1/boards/?name={{board name}}&defaultLists=false&key={{key}}&token={{token}}",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"1",
+								"boards",
+								""
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "{{board name}}"
+								},
+								{
+									"key": "defaultLists",
+									"value": "false"
+								},
+								{
+									"key": "key",
+									"value": "{{key}}"
+								},
+								{
+									"key": "token",
+									"value": "{{token}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2- Get Boards",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Verify the request method is GET\r",
+									"pm.test(\"Successful GET request\", function () {\r",
+									"    pm.actualMethod = pm.request.method;\r",
+									"    pm.expect(pm.actualMethod).to.eq(\"GET\");\r",
+									"});\r",
+									"\r",
+									"// Test for Successful Creation\r",
+									"pm.test(\"Verify successful board creation\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.response.to.have.jsonBody();\r",
+									"});\r",
+									"\r",
+									"// Verify the API response is JSON Format\r",
+									"pm.test(\"Content-Type is JSON in header\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\",\"application/json; charset=utf-8\");\r",
+									"});\r",
+									"\r",
+									"// test the response schema is correct\r",
+									"pm.test(\"Schema Validation\", function () {\r",
+									"    var schema = {\r",
+									"        type: \"object\",\r",
+									"        properties: {\r",
+									"            id: { type: \"string\" },\r",
+									"            name: { type: \"string\" },\r",
+									"            desc: { type: \"string\" },\r",
+									"            descData: { type: \"string\" },\r",
+									"            closed: { type: \"boolean\" },\r",
+									"            idMemberCreator: { type: \"string\" },\r",
+									"            idOrganization: { type: \"string\" },\r",
+									"            pinned: { type: \"boolean\" },\r",
+									"            url: { type: \"string\", format: \"uri\" },\r",
+									"            shortUrl: { type: \"string\", format: \"uri\" },\r",
+									"            prefs: {\r",
+									"                type: \"object\",\r",
+									"                properties: {\r",
+									"                    permissionLevel: { type: \"string\", enum: [\"org\", \"private\", \"public\"] },\r",
+									"                    hideVotes: { type: \"boolean\" },\r",
+									"                    voting: { type: \"string\", enum: [\"disabled\", \"members\", \"observers\", \"org\", \"public\"] },\r",
+									"                    comments: { type: \"string\" },\r",
+									"                    selfJoin: { type: \"boolean\" },\r",
+									"                    cardCovers: { type: \"boolean\" },\r",
+									"                    isTemplate: { type: \"boolean\" },\r",
+									"                    cardAging: { type: \"string\", enum: [\"pirate\", \"regular\"] },\r",
+									"                    calendarFeedEnabled: { type: \"boolean\" },\r",
+									"                    background: { type: \"string\" },\r",
+									"                    backgroundImage: { type: \"string\" },\r",
+									"                    backgroundImageScaled: {\r",
+									"                        type: \"array\",\r",
+									"                        items: {\r",
+									"                            type: \"object\",\r",
+									"                            properties: {\r",
+									"                                width: { type: \"integer\" },\r",
+									"                                height: { type: \"integer\" },\r",
+									"                                url: { type: \"string\", format: \"uri\" }\r",
+									"                            },\r",
+									"                            required: [\"width\", \"height\", \"url\"]\r",
+									"                        }\r",
+									"                    },\r",
+									"                    backgroundTile: { type: \"boolean\" },\r",
+									"                    backgroundBrightness: { type: \"string\", enum: [\"dark\", \"light\"] },\r",
+									"                    backgroundBottomColor: { type: \"string\" },\r",
+									"                    backgroundTopColor: { type: \"string\" },\r",
+									"                    canBePublic: { type: \"boolean\" },\r",
+									"                    canBeEnterprise: { type: \"boolean\" },\r",
+									"                    canBeOrg: { type: \"boolean\" },\r",
+									"                    canBePrivate: { type: \"boolean\" },\r",
+									"                    canInvite: { type: \"boolean\" }\r",
+									"                },\r",
+									"                required: [\"permissionLevel\", \"hideVotes\", \"voting\", \"comments\", \"selfJoin\", \"cardCovers\", \"isTemplate\", \"cardAging\", \"calendarFeedEnabled\", \"background\", \"backgroundImage\", \"backgroundImageScaled\", \"backgroundTile\", \"backgroundBrightness\", \"backgroundBottomColor\", \"backgroundTopColor\", \"canBePublic\", \"canBeEnterprise\", \"canBeOrg\", \"canBePrivate\", \"canInvite\"]\r",
+									"            },\r",
+									"            labelNames: {\r",
+									"                type: \"object\",\r",
+									"                properties: {\r",
+									"                    green: { type: \"string\" },\r",
+									"                    yellow: { type: \"string\" },\r",
+									"                    orange: { type: \"string\" },\r",
+									"                    red: { type: \"string\" },\r",
+									"                    purple: { type: \"string\" },\r",
+									"                    blue: { type: \"string\" },\r",
+									"                    sky: { type: \"string\" },\r",
+									"                    lime: { type: \"string\" },\r",
+									"                    pink: { type: \"string\" },\r",
+									"                    black: { type: \"string\" }\r",
+									"                }\r",
+									"            },\r",
+									"            limits: {\r",
+									"                type: \"object\",\r",
+									"                properties: {\r",
+									"                    attachments: {\r",
+									"                        type: \"object\",\r",
+									"                        properties: {\r",
+									"                            perBoard: {\r",
+									"                                type: \"object\",\r",
+									"                                properties: {\r",
+									"                                    status: { type: \"string\" },\r",
+									"                                    disableAt: { type: \"integer\" },\r",
+									"                                    warnAt: { type: \"integer\" }\r",
+									"                                },\r",
+									"                                required: [\"status\", \"disableAt\", \"warnAt\"]\r",
+									"                            }\r",
+									"                        },\r",
+									"                        required: [\"perBoard\"]\r",
+									"                    }\r",
+									"                }\r",
+									"            },\r",
+									"            starred: { type: \"boolean\" },\r",
+									"            memberships: { type: \"string\" },\r",
+									"            shortLink: { type: \"string\" },\r",
+									"            subscribed: { type: \"boolean\" },\r",
+									"            powerUps: { type: \"string\" },\r",
+									"            dateLastActivity: { type: \"string\" },\r",
+									"            dateLastView: { type: \"string\" },\r",
+									"            idTags: { type: \"string\" },\r",
+									"            datePluginDisable: { type: \"string\" },\r",
+									"            creationMethod: { type: \"string\" },\r",
+									"            ixUpdate: { type: \"integer\" },\r",
+									"            templateGallery: { type: \"string\" },\r",
+									"            enterpriseOwned: { type: \"boolean\" }\r",
+									"        },\r",
+									"        required: [\"id\", \"name\", \"desc\", \"descData\", \"closed\", \"idMemberCreator\", \"idOrganization\", \"pinned\", \"url\", \"shortUrl\", \"prefs\", \"labelNames\", \"limits\", \"starred\", \"memberships\", \"shortLink\", \"subscribed\", \"powerUps\", \"dateLastActivity\", \"dateLastView\", \"idTags\", \"datePluginDisable\", \"creationMethod\", \"ixUpdate\", \"templateGallery\", \"enterpriseOwned\"]\r",
+									"    };\r",
+									"    pm.response.to.have.jsonSchema(schema);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{BaseUrl}}/1/boards/{{board_1_id}}?key={{key}}&token={{token}}",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"1",
+								"boards",
+								"{{board_1_id}}"
+							],
+							"query": [
+								{
+									"key": "key",
+									"value": "{{key}}"
+								},
+								{
+									"key": "token",
+									"value": "{{token}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3- Update Board",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Verify the request method is PUT\r",
+									"pm.test(\"Successful PUT request\", function () {\r",
+									"    pm.actualMethod = pm.request.method;\r",
+									"    pm.expect(pm.actualMethod).to.eq(\"PUT\");\r",
+									"});\r",
+									"// Verify the API Response status code is 200 OK\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"// Verify the API response is JSON Format\r",
+									"pm.test(\"Content-Type is JSON in header\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\",\"application/json; charset=utf-8\");\r",
+									"});\r",
+									"\r",
+									"// check the name of the board\r",
+									"var BoardName = pm.environment.get(\"board name\");\r",
+									"// set the New Board Name\r",
+									"pm.environment.set(\"board name\",\"[updated]\"+BoardName);\r",
+									"var newBoardName = pm.environment.get(\"board name\");\r",
+									"console.log(newBoardName);\r",
+									"pm.test(\"Board Name is correct\", function () {\r",
+									"    pm.expect(pm.response.json().name).to.eql(newBoardName);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/1/boards/{{board_1_id}}?key={{key}}&token={{token}}&name=[updated]{{board name}}",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"1",
+								"boards",
+								"{{board_1_id}}"
+							],
+							"query": [
+								{
+									"key": "key",
+									"value": "{{key}}"
+								},
+								{
+									"key": "token",
+									"value": "{{token}}"
+								},
+								{
+									"key": "name",
+									"value": "[updated]{{board name}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "4- Create List",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Make an environment variable called list name \r",
+									"pm.environment.set(\"list_name\", \"start\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Verify the request method is POST\r",
+									"pm.test(\"Successful POST request\", function () {\r",
+									"    pm.actualMethod = pm.request.method;\r",
+									"    pm.expect(pm.actualMethod).to.eq(\"POST\");\r",
+									"});\r",
+									"\r",
+									"// Verify the API Response status code is 200 OK\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Verify the API response is JSON Format\r",
+									"pm.test(\"Content-Type is JSON in header\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\",\"application/json; charset=utf-8\");\r",
+									"});\r",
+									"\r",
+									" // Make a variable to store jsondata\r",
+									"var jsonData = pm.response.json();\r",
+									" // make a variable called list id  \r",
+									"pm.environment.set(\"list_1_id\", jsonData.id);\r",
+									"\r",
+									"// check the name of the list\r",
+									"var listname = pm.environment.get(\"list_name\");\r",
+									"pm.test(\"List Name is correct\", function () {\r",
+									"    pm.expect(jsonData.name).to.eql(listname);\r",
+									"});\r",
+									"\r",
+									"// Define the expected schema\r",
+									"const expectedSchema = {\r",
+									"    \"type\": \"object\",\r",
+									"    \"properties\": {\r",
+									"        \"id\": { \"type\": \"string\" },\r",
+									"        \"name\": { \"type\": \"string\" },\r",
+									"        \"closed\": { \"type\": \"boolean\" },\r",
+									"        \"pos\": { \"type\": \"number\" },\r",
+									"        \"softLimit\": { \"type\": \"string\" },\r",
+									"        \"idBoard\": { \"type\": \"string\" },\r",
+									"        \"subscribed\": { \"type\": \"boolean\" },\r",
+									"        \"limits\": {\r",
+									"            \"type\": \"object\",\r",
+									"            \"properties\": {\r",
+									"                \"attachments\": {\r",
+									"                    \"type\": \"object\",\r",
+									"                    \"properties\": {\r",
+									"                        \"perBoard\": {\r",
+									"                            \"type\": \"object\",\r",
+									"                            \"properties\": {\r",
+									"                                \"status\": { \"type\": \"string\" },\r",
+									"                                \"disableAt\": { \"type\": \"number\" },\r",
+									"                                \"warnAt\": { \"type\": \"number\" }\r",
+									"                            },\r",
+									"                            \"required\": [\"status\", \"disableAt\", \"warnAt\"]\r",
+									"                        }\r",
+									"                    },\r",
+									"                    \"required\": [\"perBoard\"]\r",
+									"                }\r",
+									"            },\r",
+									"            \"required\": [\"attachments\"]\r",
+									"        }\r",
+									"    },\r",
+									"    \"required\": [\"id\", \"name\", \"closed\", \"pos\", \"idBoard\", \"limits\"]\r",
+									"};\r",
+									"\r",
+									"// Get the response data\r",
+									"const responseData = pm.response.json();\r",
+									"\r",
+									"// Validate the response against the schema\r",
+									"pm.test(\"Schema Validation\", function() {\r",
+									"    pm.expect(responseData).to.have.jsonSchema(expectedSchema);\r",
+									"});\r",
+									"\r",
+									"// Test for creating a card with missing required parameters\r",
+									"pm.test(\"Return error for missing required parameters\", function () {\r",
+									"    // Define the request body with missing required parameters\r",
+									"    const requestBody = {\r",
+									"        // Missing required parameters: idList\r",
+									"    };\r",
+									"    var boardId = '';\r",
+									"    // Send the request to create a new card with missing parameters\r",
+									"    pm.sendRequest({\r",
+									"        url:'https://api.trello.com/1/boards/'+boardId+'/lists?name=Done&key=1c94aec7db5d68c59ea01ac03ccdc211&token=ATTA06878f4a0b91dd65a5f3d623b8b47fb802fe06b6b5342e5aea5e0127b39495eb0CC12AC1',\r",
+									"        method: 'POST',\r",
+									"        header: {\r",
+									"            'Content-Type': 'application/json'\r",
+									"        },\r",
+									"        body: {\r",
+									"            mode: 'raw',\r",
+									"            raw: JSON.stringify(requestBody)\r",
+									"        }\r",
+									"    }, function (err, response) {\r",
+									"        // Verify the response status code (assuming it should be 400 for bad request)\r",
+									"        pm.test(\"INVALID Create List REQUEST : Verify response status code for request missing boardId\", function () {\r",
+									"            pm.expect(response).to.have.status(404); // Assuming a 400 Bad Request status code is returned for duplicate name\r",
+									"        });\r",
+									"    });\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{BaseUrl}}/1/boards/{{board_1_id}}/lists?name={{list_name}}&key={{key}}&token={{token}}",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"1",
+								"boards",
+								"{{board_1_id}}",
+								"lists"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "{{list_name}}"
+								},
+								{
+									"key": "key",
+									"value": "{{key}}"
+								},
+								{
+									"key": "token",
+									"value": "{{token}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "5- Create Card",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Verify the request method is POST\r",
+									"pm.test(\"Successful POST request\", function () {\r",
+									"    pm.actualMethod = pm.request.method;\r",
+									"    pm.expect(pm.actualMethod).to.eq(\"POST\");\r",
+									"});\r",
+									"\r",
+									"// Verify the API Response status code is 200 OK\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Verify the API response is JSON Format\r",
+									"pm.test(\"Content-Type is JSON in header\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\",\"application/json; charset=utf-8\");\r",
+									"});\r",
+									" // Make a variable to store jsondata\r",
+									"var jsonData = pm.response.json();\r",
+									" // make a variable called Card id \r",
+									"pm.environment.set(\"card_id\", jsonData.id);\r",
+									"\r",
+									"// Verify the response contains the necessary properties\r",
+									"pm.test(\"Response contains the necessary properties\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"badges\");\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"    pm.expect(jsonData).to.have.property(\"checkItemStates\");\r",
+									"    pm.expect(jsonData).to.have.property(\"closed\");\r",
+									"    pm.expect(jsonData).to.have.property(\"dueComplete\");\r",
+									"    pm.expect(jsonData).to.have.property(\"dateLastActivity\");\r",
+									"    pm.expect(jsonData).to.have.property(\"desc\");\r",
+									"    pm.expect(jsonData).to.have.property(\"descData\");\r",
+									"    pm.expect(jsonData).to.have.property(\"due\");\r",
+									"    pm.expect(jsonData).to.have.property(\"dueReminder\");\r",
+									"    pm.expect(jsonData).to.have.property(\"email\");\r",
+									"    pm.expect(jsonData).to.have.property(\"idBoard\");\r",
+									"    pm.expect(jsonData).to.have.property(\"idList\");\r",
+									"    pm.expect(jsonData).to.have.property(\"idMembers\");\r",
+									"    pm.expect(jsonData).to.have.property(\"idMembersVoted\");\r",
+									"    pm.expect(jsonData).to.have.property(\"idShort\");\r",
+									"    pm.expect(jsonData).to.have.property(\"idAttachmentCover\");\r",
+									"    pm.expect(jsonData).to.have.property(\"labels\");\r",
+									"    pm.expect(jsonData).to.have.property(\"idLabels\");\r",
+									"    pm.expect(jsonData).to.have.property(\"manualCoverAttachment\");\r",
+									"    pm.expect(jsonData).to.have.property(\"name\");\r",
+									"    pm.expect(jsonData).to.have.property(\"pos\");\r",
+									"    pm.expect(jsonData).to.have.property(\"shortLink\");\r",
+									"    pm.expect(jsonData).to.have.property(\"shortUrl\");\r",
+									"    pm.expect(jsonData).to.have.property(\"start\");\r",
+									"    pm.expect(jsonData).to.have.property(\"subscribed\");\r",
+									"    pm.expect(jsonData).to.have.property(\"url\");\r",
+									"    pm.expect(jsonData).to.have.property(\"cover\");\r",
+									"    pm.expect(jsonData).to.have.property(\"isTemplate\");\r",
+									"    pm.expect(jsonData).to.have.property(\"cardRole\");\r",
+									"    pm.expect(jsonData).to.have.property(\"attachments\");\r",
+									"    pm.expect(jsonData).to.have.property(\"stickers\");\r",
+									"    pm.expect(jsonData).to.have.property(\"limits\");\r",
+									"});\r",
+									"\r",
+									"// Test for creating a card with missing required parameters\r",
+									"pm.test(\"Return error for missing required parameters\", function () {\r",
+									"    // Define the request body with missing required parameters\r",
+									"    const requestBody = {\r",
+									"        // Missing required parameters: name, idList\r",
+									"    };\r",
+									"    var list1ID = '';\r",
+									"    // Send the request to create a new card with missing parameters\r",
+									"    pm.sendRequest({\r",
+									"        url: `https://api.trello.com/1/cards?idList=' + list1ID +'&key=1c94aec7db5d68c59ea01ac03ccdc211&token=ATTA06878f4a0b91dd65a5f3d623b8b47fb802fe06b6b5342e5aea5e0127b39495eb0CC12AC1&name=card%201`,\r",
+									"        method: 'POST',\r",
+									"        header: {\r",
+									"            'Content-Type': 'application/json'\r",
+									"        },\r",
+									"        body: {\r",
+									"            mode: 'raw',\r",
+									"            raw: JSON.stringify(requestBody)\r",
+									"        }\r",
+									"    }, function (err, response) {\r",
+									"        // Verify the response status code (assuming it should be 400 for bad request)\r",
+									"        pm.test(\"INVALID RQUEST : Verify response status code for request missing listId\", function () {\r",
+									"            pm.expect(response).to.have.status(400); // Assuming a 400 Bad Request status code is returned for duplicate name\r",
+									"        });\r",
+									"    });\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"/*\r",
+									"var x = pm.environment.get(x);\r",
+									"x = x+1;\r",
+									"pm.environment.set(\"x\",x);\r",
+									"*/\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{BaseUrl}}/1/cards?idList={{list_1_id}}&key={{key}}&token={{token}}&name=card 1",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"1",
+								"cards"
+							],
+							"query": [
+								{
+									"key": "idList",
+									"value": "{{list_1_id}}"
+								},
+								{
+									"key": "key",
+									"value": "{{key}}"
+								},
+								{
+									"key": "token",
+									"value": "{{token}}"
+								},
+								{
+									"key": "name",
+									"value": "card 1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "6- Creat CheckList",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Verify the request method is POST\r",
+									"pm.test(\"Successful POST request\", function () {\r",
+									"    pm.actualMethod = pm.request.method;\r",
+									"    pm.expect(pm.actualMethod).to.eq(\"POST\");\r",
+									"});\r",
+									"\r",
+									"// Verify the API Response status code is 200 OK\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"// Verify the API response is JSON Format\r",
+									"pm.test(\"Content-Type is JSON in header\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\",\"application/json; charset=utf-8\");\r",
+									"});\r",
+									" // Make a variable to store jsondata\r",
+									"var jsonData = pm.response.json();\r",
+									" // make a variable called Card id \r",
+									"pm.environment.set(\"checkList_id\", jsonData.id);\r",
+									"\r",
+									"// Verify the response contains the necessary properties\r",
+									"pm.test(\"Response contains the necessary properties\", function () {\r",
+									"    //pm.expect(jsonData).to.have.property(\"badges\");\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"    \r",
+									"    /*pm.expect(jsonData).to.have.property(\"checkItemStates\");\r",
+									"    pm.expect(jsonData).to.have.property(\"closed\");\r",
+									"    pm.expect(jsonData).to.have.property(\"dueComplete\");\r",
+									"    pm.expect(jsonData).to.have.property(\"dateLastActivity\");\r",
+									"    pm.expect(jsonData).to.have.property(\"desc\");\r",
+									"    pm.expect(jsonData).to.have.property(\"descData\");\r",
+									"    pm.expect(jsonData).to.have.property(\"due\");\r",
+									"    pm.expect(jsonData).to.have.property(\"dueReminder\");\r",
+									"    pm.expect(jsonData).to.have.property(\"email\");\r",
+									"    pm.expect(jsonData).to.have.property(\"idBoard\");\r",
+									"    pm.expect(jsonData).to.have.property(\"idList\");\r",
+									"    pm.expect(jsonData).to.have.property(\"idMembers\");\r",
+									"    pm.expect(jsonData).to.have.property(\"idMembersVoted\");\r",
+									"    pm.expect(jsonData).to.have.property(\"idShort\");\r",
+									"    pm.expect(jsonData).to.have.property(\"idAttachmentCover\");\r",
+									"    pm.expect(jsonData).to.have.property(\"labels\");\r",
+									"    pm.expect(jsonData).to.have.property(\"idLabels\");\r",
+									"    pm.expect(jsonData).to.have.property(\"manualCoverAttachment\");\r",
+									"    pm.expect(jsonData).to.have.property(\"name\");\r",
+									"    pm.expect(jsonData).to.have.property(\"pos\");\r",
+									"    pm.expect(jsonData).to.have.property(\"shortLink\");\r",
+									"    pm.expect(jsonData).to.have.property(\"shortUrl\");\r",
+									"    pm.expect(jsonData).to.have.property(\"start\");\r",
+									"    pm.expect(jsonData).to.have.property(\"subscribed\");\r",
+									"    pm.expect(jsonData).to.have.property(\"url\");\r",
+									"    pm.expect(jsonData).to.have.property(\"cover\");\r",
+									"    pm.expect(jsonData).to.have.property(\"isTemplate\");\r",
+									"    pm.expect(jsonData).to.have.property(\"cardRole\");\r",
+									"    pm.expect(jsonData).to.have.property(\"attachments\");\r",
+									"    pm.expect(jsonData).to.have.property(\"stickers\");\r",
+									"    pm.expect(jsonData).to.have.property(\"limits\");\r",
+									"    */\r",
+									"});\r",
+									"\r",
+									"// Test for creating a card with missing required parameters\r",
+									"pm.test(\"Return error for missing required parameters\", function () {\r",
+									"    // Define the request body with missing required parameters\r",
+									"    const requestBody = {\r",
+									"        // Missing required parameters: idList\r",
+									"    };\r",
+									"    var card1ID = '';\r",
+									"    // Send the request to create a new card with missing parameters\r",
+									"    pm.sendRequest({\r",
+									"        url: 'https://api.trello.com/1/cards/'+ card1ID +'/checklists?key=1c94aec7db5d68c59ea01ac03ccdc211&token=ATTA06878f4a0b91dd65a5f3d623b8b47fb802fe06b6b5342e5aea5e0127b39495eb0CC12AC1&name=card%201&name=checkList_2',\r",
+									"        method: 'POST',\r",
+									"        header: {\r",
+									"            'Content-Type': 'application/json'\r",
+									"        },\r",
+									"        body: {\r",
+									"            mode: 'raw',\r",
+									"            raw: JSON.stringify(requestBody)\r",
+									"        }\r",
+									"    }, function (err, response) {\r",
+									"        // Verify the response status code (assuming it should be 400 for bad request)\r",
+									"        pm.test(\"INVALID Create CheckList RQUEST : Verify response status code for request missing cardId\", function () {\r",
+									"            pm.expect(response).to.have.status(404); // Assuming a 400 Bad Request status code is returned for duplicate name\r",
+									"        });\r",
+									"    });\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/1/cards/{{card_id}}/checklists?key={{key}}&token={{token}}&name=checkList_1",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"1",
+								"cards",
+								"{{card_id}}",
+								"checklists"
+							],
+							"query": [
+								{
+									"key": "key",
+									"value": "{{key}}"
+								},
+								{
+									"key": "token",
+									"value": "{{token}}"
+								},
+								{
+									"key": "name",
+									"value": "checkList_1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "7- Create CheckItem",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Verify the request method is POST\r",
+									"pm.test(\"Successful POST request\", function () {\r",
+									"    pm.actualMethod = pm.request.method;\r",
+									"    pm.expect(pm.actualMethod).to.eq(\"POST\");\r",
+									"});\r",
+									"\r",
+									"// Verify the API Response status code is 200 OK\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"// Verify the API response is JSON Format\r",
+									"pm.test(\"Content-Type is JSON in header\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\",\"application/json; charset=utf-8\");\r",
+									"});\r",
+									" // Make a variable to store jsondata\r",
+									"var jsonData = pm.response.json();\r",
+									" // make a variable called Card id \r",
+									"pm.environment.set(\"checkItem_id\", jsonData.id);\r",
+									"\r",
+									"// Verify the response contains the necessary properties\r",
+									"pm.test(\"Response contains the necessary properties\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"});\r",
+									"\r",
+									"// Test for creating a card with missing required parameters\r",
+									"pm.test(\"Return error for missing required parameters\", function () {\r",
+									"    // Define the request body with missing required parameters\r",
+									"    const requestBody = {\r",
+									"        // Missing required parameters: idList\r",
+									"    };\r",
+									"    var checkListId = '';\r",
+									"    // Send the request to create a new card with missing parameters\r",
+									"    pm.sendRequest({\r",
+									"        url:'https://api.trello.com/1/checklists/'+checkListId+'/checkItems?name=mhmd&key=1c94aec7db5d68c59ea01ac03ccdc211&token=ATTA06878f4a0b91dd65a5f3d623b8b47fb802fe06b6b5342e5aea5e0127b39495eb0CC12AC1',\r",
+									"        method: 'POST',\r",
+									"        header: {\r",
+									"            'Content-Type': 'application/json'\r",
+									"        },\r",
+									"        body: {\r",
+									"            mode: 'raw',\r",
+									"            raw: JSON.stringify(requestBody)\r",
+									"        }\r",
+									"    }, function (err, response) {\r",
+									"        // Verify the response status code (assuming it should be 400 for bad request)\r",
+									"        pm.test(\"INVALID Create CheckItem RQUEST : Verify response status code for request missing checkListId\", function () {\r",
+									"            pm.expect(response).to.have.status(404); // Assuming a 400 Bad Request status code is returned for duplicate name\r",
+									"        });\r",
+									"    });\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/1/checklists/{{checkList_id}}/checkItems?name=mhmd&key={{key}}&token={{token}}",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"1",
+								"checklists",
+								"{{checkList_id}}",
+								"checkItems"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "mhmd"
+								},
+								{
+									"key": "key",
+									"value": "{{key}}"
+								},
+								{
+									"key": "token",
+									"value": "{{token}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "8- Get CheckItem On CheckList",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test to verify that the request method is GET\r",
+									"pm.test(\"Request method is GET\", function () {\r",
+									"    pm.expect(pm.request.method).to.equal(\"GET\");\r",
+									"});\r",
+									"\r",
+									"// Test to verify that the response status code is 200 OK\r",
+									"pm.test(\"Response status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Test to verify that the response body is in JSON format\r",
+									"pm.test(\"Response body is in JSON format\", function () {\r",
+									"    pm.response.to.have.jsonBody();\r",
+									"});\r",
+									"\r",
+									"// check the id of the checkitem\r",
+									"var checkitemid = pm.environment.get(\"checkItem_id\");\r",
+									"pm.test(\"checkitem id is correct\", function () {\r",
+									"    pm.expect(pm.response.json().id).to.eql(checkitemid);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/1/checklists/{{checkList_id}}/checkItems/{{checkItem_id}}?key={{key}}&token={{token}}",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"1",
+								"checklists",
+								"{{checkList_id}}",
+								"checkItems",
+								"{{checkItem_id}}"
+							],
+							"query": [
+								{
+									"key": "key",
+									"value": "{{key}}"
+								},
+								{
+									"key": "token",
+									"value": "{{token}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "9- Create CheckItem 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Verify the request method is POST\r",
+									"pm.test(\"Successful POST request\", function () {\r",
+									"    pm.actualMethod = pm.request.method;\r",
+									"    pm.expect(pm.actualMethod).to.eq(\"POST\");\r",
+									"});\r",
+									"\r",
+									"// Verify the API Response status code is 200 OK\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"// Verify the API response is JSON Format\r",
+									"pm.test(\"Content-Type is JSON in header\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\",\"application/json; charset=utf-8\");\r",
+									"});\r",
+									" // Make a variable to store jsondata\r",
+									"var jsonData = pm.response.json();\r",
+									" // make a variable called Card id \r",
+									"pm.environment.set(\"checkItem_2_id\", jsonData.id);\r",
+									"\r",
+									"// Verify the response contains the necessary properties\r",
+									"pm.test(\"Response contains the necessary properties\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"});\r",
+									"\r",
+									"// Test for creating a card with missing required parameters\r",
+									"pm.test(\"Return error for missing required parameters\", function () {\r",
+									"    // Define the request body with missing required parameters\r",
+									"    const requestBody = {\r",
+									"        // Missing required parameters: idList\r",
+									"    };\r",
+									"    var checkListId = '';\r",
+									"    // Send the request to create a new card with missing parameters\r",
+									"    pm.sendRequest({\r",
+									"        url:'https://api.trello.com/1/checklists/'+checkListId+'/checkItems?name=mhmd&key=1c94aec7db5d68c59ea01ac03ccdc211&token=ATTA06878f4a0b91dd65a5f3d623b8b47fb802fe06b6b5342e5aea5e0127b39495eb0CC12AC1',\r",
+									"        method: 'POST',\r",
+									"        header: {\r",
+									"            'Content-Type': 'application/json'\r",
+									"        },\r",
+									"        body: {\r",
+									"            mode: 'raw',\r",
+									"            raw: JSON.stringify(requestBody)\r",
+									"        }\r",
+									"    }, function (err, response) {\r",
+									"        // Verify the response status code (assuming it should be 400 for bad request)\r",
+									"        pm.test(\"INVALID Create CheckItem RQUEST : Verify response status code for request missing checkListId\", function () {\r",
+									"            pm.expect(response).to.have.status(404); // Assuming a 400 Bad Request status code is returned for duplicate name\r",
+									"        });\r",
+									"    });\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/1/checklists/{{checkList_id}}/checkItems?name=mhmd&key={{key}}&token={{token}}",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"1",
+								"checklists",
+								"{{checkList_id}}",
+								"checkItems"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "mhmd"
+								},
+								{
+									"key": "key",
+									"value": "{{key}}"
+								},
+								{
+									"key": "token",
+									"value": "{{token}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "10- Get CheckItem 2 On CheckList",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Test to verify that the request method is GET\r",
+									"pm.test(\"Request method is GET\", function () {\r",
+									"    pm.expect(pm.request.method).to.equal(\"GET\");\r",
+									"});\r",
+									"\r",
+									"// Test to verify that the response status code is 200 OK\r",
+									"pm.test(\"Response status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Test to verify that the response body is in JSON format\r",
+									"pm.test(\"Response body is in JSON format\", function () {\r",
+									"    pm.response.to.have.jsonBody();\r",
+									"});\r",
+									"\r",
+									"// check the id of the checkitem\r",
+									"var checkitemid = pm.environment.get(\"checkItem_2_id\");\r",
+									"pm.test(\"checkitem id is correct\", function () {\r",
+									"    pm.expect(pm.response.json().id).to.eql(checkitemid);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/1/checklists/{{checkList_id}}/checkItems/{{checkItem_2_id}}?key={{key}}&token={{token}}",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"1",
+								"checklists",
+								"{{checkList_id}}",
+								"checkItems",
+								"{{checkItem_2_id}}"
+							],
+							"query": [
+								{
+									"key": "key",
+									"value": "{{key}}"
+								},
+								{
+									"key": "token",
+									"value": "{{token}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "11- Create Board 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// set board_id ",
+									"pm.environment.set(\"board_2_id\",pm.response.json().id);",
+									"",
+									"// Verify the request method is POST",
+									"pm.test(\"Successful POST request\", function () {",
+									"    pm.actualMethod = pm.request.method;",
+									"    pm.expect(pm.actualMethod).to.eq(\"POST\");",
+									"});",
+									"",
+									"// Test for Successful Creation",
+									"pm.test(\"Verify successful board creation\", function () {",
+									"    pm.response.to.have.status(200);",
+									"    pm.response.to.have.jsonBody();",
+									"});",
+									"",
+									"// Verify the API response is JSON Format",
+									"pm.test(\"Content-Type is JSON in header\", function () {",
+									"    pm.response.to.have.header(\"Content-Type\",\"application/json; charset=utf-8\");",
+									"});",
+									"",
+									"// Test for Response Content",
+									"pm.test(\"Verify response content\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property(\"id\");",
+									"    pm.expect(jsonData).to.have.property(\"name\");",
+									"    pm.expect(jsonData).to.have.property(\"desc\");",
+									"    pm.expect(jsonData).to.have.property(\"closed\");",
+									"    pm.expect(jsonData).to.have.property(\"descData\");",
+									"    pm.expect(jsonData).to.have.property(\"idOrganization\");",
+									"    pm.expect(jsonData).to.have.property(\"idEnterprise\");",
+									"    pm.expect(jsonData).to.have.property(\"pinned\");",
+									"    pm.expect(jsonData).to.have.property(\"url\");",
+									"    pm.expect(jsonData).to.have.property(\"shortUrl\");",
+									"    pm.expect(jsonData).to.have.property(\"prefs\");",
+									"});",
+									"",
+									"// Schema Validation",
+									"pm.test(\"Schema Validation\", function () {",
+									"    var schema = {",
+									"        type: \"object\",",
+									"        properties: {",
+									"            id: { type: \"string\" },",
+									"            name: { type: \"string\" , minLength: 1 },",
+									"            desc: { type: \"string\" },",
+									"            defaultLabels: { type: \"boolean\" },",
+									"            defaultLists: { type: \"boolean\" },",
+									"            idOrganization: { type: \"string\", pattern: \"^[0-9a-fA-F]{24}$\" },",
+									"            idBoardSource: { type: \"string\", pattern: \"^[0-9a-fA-F]{24}$\" },",
+									"            keepFromSource: { type: \"string\", enum: [\"cards\", \"none\"] },",
+									"            powerUps: { type: \"string\", enum: [\"all\", \"calendar\", \"cardAging\", \"recap\", \"voting\"] },",
+									"            prefs_permissionLevel: { type: \"string\", enum: [\"org\", \"private\", \"public\"] },",
+									"            prefs_voting: { type: \"string\", enum: [\"disabled\", \"members\", \"observers\", \"org\", \"public\"] },",
+									"            prefs_comments: { type: \"string\", enum: [\"disabled\", \"members\", \"observers\", \"org\", \"public\"] },",
+									"            prefs_invitations: { type: \"string\", enum: [\"admins\", \"members\"] },",
+									"            prefs_selfJoin: { type: \"boolean\" },",
+									"            prefs_cardCovers: { type: \"boolean\" },",
+									"            prefs_background: { type: \"string\", enum: [\"blue\", \"orange\", \"green\", \"red\", \"purple\", \"pink\", \"lime\", \"sky\", \"grey\"] },",
+									"            prefs_cardAging: { type: \"string\", enum: [\"pirate\", \"regular\"] }",
+									"        },",
+									"        required: [\"id\", \"name\"]",
+									"    };",
+									"    pm.response.to.have.jsonSchema(schema);",
+									"});",
+									"// Test for Parameter Validity",
+									"pm.test(\"Verify parameter validity\", function () {",
+									"    pm.expect(pm.request.url).to.match(/name=.+&/); // Ensure name parameter is followed by another parameter or end of URL",
+									"});",
+									"",
+									"// verify length Boundry Value Analysis",
+									"pm.test(\"Verify maximum length of board name more than 0\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.name.length).to.be.at.least(0);",
+									"});",
+									"",
+									"// Test for Maximum Length",
+									"pm.test(\"Verify minimum length of board name less than or equal 16384\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.name.length).to.be.at.most(16384);",
+									"});",
+									"",
+									"// Test for blank Name Handling",
+									"pm.test(\"Verify blank board name handling\", function () {",
+									"    // Set the board name to blank",
+									"    var blankBoardName = \"\";",
+									"",
+									"    // Attempt to create a board with a blank name",
+									"    pm.sendRequest({",
+									"        url: 'https://api.trello.com/1/boards/?name='+blankBoardName+'&defaultLists=false&key=1c94aec7db5d68c59ea01ac03ccdc211&token=ATTA06878f4a0b91dd65a5f3d623b8b47fb802fe06b6b5342e5aea5e0127b39495eb0CC12AC1',",
+									"        method: 'POST',",
+									"        header: {",
+									"            'Content-Type': 'application/json'",
+									"        },",
+									"        body: {",
+									"            mode: 'raw',",
+									"            raw: JSON.stringify({ name: blankBoardName })",
+									"        }",
+									"    }, function (err, response) {",
+									"        console.log(pm.response.json());",
+									"        // Verify that the response has a status code of 400 (Bad Request)",
+									"        pm.test(\"Verify response status code for Blank name\", function () {",
+									"            pm.expect(response.code).to.eql(400);",
+									"        });",
+									"",
+									"        // Verify that the response contains an error message indicating the issue with the blank name",
+									"        pm.test(\"Verify response error message for Blank name\", function () {",
+									"            pm.expect(response.status).to.eql(\"Bad Request\");",
+									"        });",
+									"    });",
+									"});",
+									"",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"function getboardnameItem() {\r",
+									"    var boardname = [\"A\", \"B\", \"C\", \"D\"];\r",
+									"    // Check if boardname is an array and it's not empty\r",
+									"    if (Array.isArray(boardname) && boardname.length > 0) {\r",
+									"        var randomIndex = Math.floor(Math.random() * boardname.length);\r",
+									"        return boardname[randomIndex];\r",
+									"    } else {\r",
+									"        // Handle the case when boardname is empty or not an array\r",
+									"        return \"No board names available\";\r",
+									"    }\r",
+									"}\r",
+									"\r",
+									"// Make an environment variable called board name \r",
+									"pm.environment.set(\"board name\", getboardnameItem());\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "apikey"
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/1/boards/?name={{board name}}&defaultLists=false&key={{key}}&token={{token}}",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"1",
+								"boards",
+								""
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "{{board name}}"
+								},
+								{
+									"key": "defaultLists",
+									"value": "false"
+								},
+								{
+									"key": "key",
+									"value": "{{key}}"
+								},
+								{
+									"key": "token",
+									"value": "{{token}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "12- Get Boards 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Verify the request method is GET\r",
+									"pm.test(\"Successful GET request\", function () {\r",
+									"    pm.actualMethod = pm.request.method;\r",
+									"    pm.expect(pm.actualMethod).to.eq(\"GET\");\r",
+									"});\r",
+									"\r",
+									"// Test for Successful Creation\r",
+									"pm.test(\"Verify successful board creation\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.response.to.have.jsonBody();\r",
+									"});\r",
+									"\r",
+									"// Verify the API response is JSON Format\r",
+									"pm.test(\"Content-Type is JSON in header\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\",\"application/json; charset=utf-8\");\r",
+									"});\r",
+									"\r",
+									"// test the response schema is correct\r",
+									"pm.test(\"Schema Validation\", function () {\r",
+									"    var schema = {\r",
+									"        type: \"object\",\r",
+									"        properties: {\r",
+									"            id: { type: \"string\" },\r",
+									"            name: { type: \"string\" },\r",
+									"            desc: { type: \"string\" },\r",
+									"            descData: { type: \"string\" },\r",
+									"            closed: { type: \"boolean\" },\r",
+									"            idMemberCreator: { type: \"string\" },\r",
+									"            idOrganization: { type: \"string\" },\r",
+									"            pinned: { type: \"boolean\" },\r",
+									"            url: { type: \"string\", format: \"uri\" },\r",
+									"            shortUrl: { type: \"string\", format: \"uri\" },\r",
+									"            prefs: {\r",
+									"                type: \"object\",\r",
+									"                properties: {\r",
+									"                    permissionLevel: { type: \"string\", enum: [\"org\", \"private\", \"public\"] },\r",
+									"                    hideVotes: { type: \"boolean\" },\r",
+									"                    voting: { type: \"string\", enum: [\"disabled\", \"members\", \"observers\", \"org\", \"public\"] },\r",
+									"                    comments: { type: \"string\" },\r",
+									"                    selfJoin: { type: \"boolean\" },\r",
+									"                    cardCovers: { type: \"boolean\" },\r",
+									"                    isTemplate: { type: \"boolean\" },\r",
+									"                    cardAging: { type: \"string\", enum: [\"pirate\", \"regular\"] },\r",
+									"                    calendarFeedEnabled: { type: \"boolean\" },\r",
+									"                    background: { type: \"string\" },\r",
+									"                    backgroundImage: { type: \"string\" },\r",
+									"                    backgroundImageScaled: {\r",
+									"                        type: \"array\",\r",
+									"                        items: {\r",
+									"                            type: \"object\",\r",
+									"                            properties: {\r",
+									"                                width: { type: \"integer\" },\r",
+									"                                height: { type: \"integer\" },\r",
+									"                                url: { type: \"string\", format: \"uri\" }\r",
+									"                            },\r",
+									"                            required: [\"width\", \"height\", \"url\"]\r",
+									"                        }\r",
+									"                    },\r",
+									"                    backgroundTile: { type: \"boolean\" },\r",
+									"                    backgroundBrightness: { type: \"string\", enum: [\"dark\", \"light\"] },\r",
+									"                    backgroundBottomColor: { type: \"string\" },\r",
+									"                    backgroundTopColor: { type: \"string\" },\r",
+									"                    canBePublic: { type: \"boolean\" },\r",
+									"                    canBeEnterprise: { type: \"boolean\" },\r",
+									"                    canBeOrg: { type: \"boolean\" },\r",
+									"                    canBePrivate: { type: \"boolean\" },\r",
+									"                    canInvite: { type: \"boolean\" }\r",
+									"                },\r",
+									"                required: [\"permissionLevel\", \"hideVotes\", \"voting\", \"comments\", \"selfJoin\", \"cardCovers\", \"isTemplate\", \"cardAging\", \"calendarFeedEnabled\", \"background\", \"backgroundImage\", \"backgroundImageScaled\", \"backgroundTile\", \"backgroundBrightness\", \"backgroundBottomColor\", \"backgroundTopColor\", \"canBePublic\", \"canBeEnterprise\", \"canBeOrg\", \"canBePrivate\", \"canInvite\"]\r",
+									"            },\r",
+									"            labelNames: {\r",
+									"                type: \"object\",\r",
+									"                properties: {\r",
+									"                    green: { type: \"string\" },\r",
+									"                    yellow: { type: \"string\" },\r",
+									"                    orange: { type: \"string\" },\r",
+									"                    red: { type: \"string\" },\r",
+									"                    purple: { type: \"string\" },\r",
+									"                    blue: { type: \"string\" },\r",
+									"                    sky: { type: \"string\" },\r",
+									"                    lime: { type: \"string\" },\r",
+									"                    pink: { type: \"string\" },\r",
+									"                    black: { type: \"string\" }\r",
+									"                }\r",
+									"            },\r",
+									"            limits: {\r",
+									"                type: \"object\",\r",
+									"                properties: {\r",
+									"                    attachments: {\r",
+									"                        type: \"object\",\r",
+									"                        properties: {\r",
+									"                            perBoard: {\r",
+									"                                type: \"object\",\r",
+									"                                properties: {\r",
+									"                                    status: { type: \"string\" },\r",
+									"                                    disableAt: { type: \"integer\" },\r",
+									"                                    warnAt: { type: \"integer\" }\r",
+									"                                },\r",
+									"                                required: [\"status\", \"disableAt\", \"warnAt\"]\r",
+									"                            }\r",
+									"                        },\r",
+									"                        required: [\"perBoard\"]\r",
+									"                    }\r",
+									"                }\r",
+									"            },\r",
+									"            starred: { type: \"boolean\" },\r",
+									"            memberships: { type: \"string\" },\r",
+									"            shortLink: { type: \"string\" },\r",
+									"            subscribed: { type: \"boolean\" },\r",
+									"            powerUps: { type: \"string\" },\r",
+									"            dateLastActivity: { type: \"string\" },\r",
+									"            dateLastView: { type: \"string\" },\r",
+									"            idTags: { type: \"string\" },\r",
+									"            datePluginDisable: { type: \"string\" },\r",
+									"            creationMethod: { type: \"string\" },\r",
+									"            ixUpdate: { type: \"integer\" },\r",
+									"            templateGallery: { type: \"string\" },\r",
+									"            enterpriseOwned: { type: \"boolean\" }\r",
+									"        },\r",
+									"        required: [\"id\", \"name\", \"desc\", \"descData\", \"closed\", \"idMemberCreator\", \"idOrganization\", \"pinned\", \"url\", \"shortUrl\", \"prefs\", \"labelNames\", \"limits\", \"starred\", \"memberships\", \"shortLink\", \"subscribed\", \"powerUps\", \"dateLastActivity\", \"dateLastView\", \"idTags\", \"datePluginDisable\", \"creationMethod\", \"ixUpdate\", \"templateGallery\", \"enterpriseOwned\"]\r",
+									"    };\r",
+									"    pm.response.to.have.jsonSchema(schema);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{BaseUrl}}/1/boards/{{board_2_id}}?key={{key}}&token={{token}}",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"1",
+								"boards",
+								"{{board_2_id}}"
+							],
+							"query": [
+								{
+									"key": "key",
+									"value": "{{key}}"
+								},
+								{
+									"key": "token",
+									"value": "{{token}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "13 -Create List 2",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Get a random name of the List\r",
+									"function getlistnameItem() {\r",
+									"    var listname = [\"Doing\",\"Done\"]; \r",
+									"    var randomIndex = Math.floor(Math.random() * listname.length);\r",
+									"    return listname[randomIndex];\r",
+									"}\r",
+									"// Make an environment variable called list name \r",
+									"pm.environment.set(\"list_2_name\", getlistnameItem());"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Verify the request method is POST\r",
+									"pm.test(\"Successful POST request\", function () {\r",
+									"    pm.actualMethod = pm.request.method;\r",
+									"    pm.expect(pm.actualMethod).to.eq(\"POST\");\r",
+									"});\r",
+									"\r",
+									"// Verify the API Response status code is 200 OK\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Verify the API response is JSON Format\r",
+									"pm.test(\"Content-Type is JSON in header\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\",\"application/json; charset=utf-8\");\r",
+									"});\r",
+									"\r",
+									" // Make a variable to store jsondata\r",
+									"var jsonData = pm.response.json();\r",
+									" // make a variable called list id  \r",
+									"pm.environment.set(\"list_2_id\", jsonData.id);\r",
+									"\r",
+									"// check the name of the list save correct\r",
+									"var listname2 = pm.environment.get(\"list_2_name\");\r",
+									"pm.test(\"List Name is correct\", function () {\r",
+									"    pm.expect(jsonData.name).to.eql(listname2);\r",
+									"});\r",
+									"// Define the expected schema\r",
+									"const expectedSchema = {\r",
+									"    \"type\": \"object\",\r",
+									"    \"properties\": {\r",
+									"        \"id\": { \"type\": \"string\" },\r",
+									"        \"name\": { \"type\": \"string\" },\r",
+									"        \"closed\": { \"type\": \"boolean\" },\r",
+									"        \"pos\": { \"type\": \"number\" },\r",
+									"        \"softLimit\": { \"type\": \"string\" },\r",
+									"        \"idBoard\": { \"type\": \"string\" },\r",
+									"        \"subscribed\": { \"type\": \"boolean\" },\r",
+									"        \"limits\": {\r",
+									"            \"type\": \"object\",\r",
+									"            \"properties\": {\r",
+									"                \"attachments\": {\r",
+									"                    \"type\": \"object\",\r",
+									"                    \"properties\": {\r",
+									"                        \"perBoard\": {\r",
+									"                            \"type\": \"object\",\r",
+									"                            \"properties\": {\r",
+									"                                \"status\": { \"type\": \"string\" },\r",
+									"                                \"disableAt\": { \"type\": \"number\" },\r",
+									"                                \"warnAt\": { \"type\": \"number\" }\r",
+									"                            },\r",
+									"                            \"required\": [\"status\", \"disableAt\", \"warnAt\"]\r",
+									"                        }\r",
+									"                    },\r",
+									"                    \"required\": [\"perBoard\"]\r",
+									"                }\r",
+									"            },\r",
+									"            \"required\": [\"attachments\"]\r",
+									"        }\r",
+									"    },\r",
+									"    \"required\": [\"id\", \"name\", \"closed\", \"pos\", \"idBoard\", \"limits\"]\r",
+									"};\r",
+									"\r",
+									"// Get the response data\r",
+									"const responseData = pm.response.json();\r",
+									"\r",
+									"// Validate the response against the schema\r",
+									"pm.test(\"Schema Validation\", function() {\r",
+									"    pm.expect(responseData).to.have.jsonSchema(expectedSchema);\r",
+									"});\r",
+									"\r",
+									"// Test for creating a card with missing required parameters\r",
+									"pm.test(\"Return error for missing required parameters\", function () {\r",
+									"    // Define the request body with missing required parameters\r",
+									"    const requestBody = {\r",
+									"        // Missing required parameters: idList\r",
+									"    };\r",
+									"    var boardId = '';\r",
+									"    // Send the request to create a new card with missing parameters\r",
+									"    pm.sendRequest({\r",
+									"        url:'https://api.trello.com/1/boards/'+boardId+'/lists?name=Done&key=1c94aec7db5d68c59ea01ac03ccdc211&token=ATTA06878f4a0b91dd65a5f3d623b8b47fb802fe06b6b5342e5aea5e0127b39495eb0CC12AC1',\r",
+									"        method: 'POST',\r",
+									"        header: {\r",
+									"            'Content-Type': 'application/json'\r",
+									"        },\r",
+									"        body: {\r",
+									"            mode: 'raw',\r",
+									"            raw: JSON.stringify(requestBody)\r",
+									"        }\r",
+									"    }, function (err, response) {\r",
+									"        // Verify the response status code (assuming it should be 400 for bad request)\r",
+									"        pm.test(\"INVALID Create List REQUEST : Verify response status code for request missing boardId\", function () {\r",
+									"            pm.expect(response).to.have.status(404); // Assuming a 400 Bad Request status code is returned for duplicate name\r",
+									"        });\r",
+									"    });\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{BaseUrl}}/1/boards/{{board_1_id}}/lists?name={{list_2_name}}&key={{key}}&token={{token}}",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"1",
+								"boards",
+								"{{board_1_id}}",
+								"lists"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "{{list_2_name}}"
+								},
+								{
+									"key": "key",
+									"value": "{{key}}"
+								},
+								{
+									"key": "token",
+									"value": "{{token}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "14- Move cards",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Verify the request method is POST\r",
+									"pm.test(\"Successful POST request\", function () {\r",
+									"    pm.actualMethod = pm.request.method;\r",
+									"    pm.expect(pm.actualMethod).to.eq(\"POST\");\r",
+									"});\r",
+									"\r",
+									"// Verify the API Response status code is 200 OK\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Verify the API response is JSON Format\r",
+									"pm.test(\"Content-Type is JSON in header\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\",\"application/json; charset=utf-8\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/1/lists/{{board_1_id}}/moveAllCards?idBoard={{board_1_id}}&idList={{list_2_id}}&key={{key}}&token={{token}}",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"1",
+								"lists",
+								"{{board_1_id}}",
+								"moveAllCards"
+							],
+							"query": [
+								{
+									"key": "idBoard",
+									"value": "{{board_1_id}}"
+								},
+								{
+									"key": "idList",
+									"value": "{{list_2_id}}"
+								},
+								{
+									"key": "key",
+									"value": "{{key}}"
+								},
+								{
+									"key": "token",
+									"value": "{{token}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "15- move List",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Verify the request method is POST\r",
+									"pm.test(\"Successful PUT request\", function () {\r",
+									"    pm.actualMethod = pm.request.method;\r",
+									"    pm.expect(pm.actualMethod).to.eq(\"PUT\");\r",
+									"});\r",
+									"\r",
+									"// Verify the API Response status code is 200 OK\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Verify the API response is JSON Format\r",
+									"pm.test(\"Content-Type is JSON in header\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\",\"application/json; charset=utf-8\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/1/lists/{{board_1_id}}/idBoard?value={{board_2_id}}&key={{key}}&token={{token}}",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"1",
+								"lists",
+								"{{board_1_id}}",
+								"idBoard"
+							],
+							"query": [
+								{
+									"key": "value",
+									"value": "{{board_2_id}}"
+								},
+								{
+									"key": "key",
+									"value": "{{key}}"
+								},
+								{
+									"key": "token",
+									"value": "{{token}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Delete",
+			"item": [
+				{
+					"name": "1- Delete CheckItem",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Verify the request method is DELETE\r",
+									"pm.test(\"Successful DELETE request\", function () {\r",
+									"    pm.actualMethod = pm.request.method;\r",
+									"    pm.expect(pm.actualMethod).to.eq(\"DELETE\");\r",
+									"});\r",
+									"\r",
+									"// Verify the API Response status code is 200 OK\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Verify the API response is JSON Format\r",
+									"pm.test(\"Content-Type is JSON in header\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\",\"application/json; charset=utf-8\");\r",
+									"});\r",
+									"\r",
+									"// Test for creating a card with missing required parameters\r",
+									"pm.test(\"Return error for missing required parameters\", function () {\r",
+									"    // Define the request body with missing required parameters\r",
+									"    const requestBody = {\r",
+									"        // Missing required parameters: idList\r",
+									"    };\r",
+									"    var checkListId = '';\r",
+									"    var checkItemId = '';\r",
+									"    \r",
+									"    // Send the request to create a new card with missing parameters\r",
+									"    pm.sendRequest({\r",
+									"        url:'https://api.trello.com/1/checklists/'+checkListId +'/checkItems/65ed58bd6e681cb467666c06?key=1c94aec7db5d68c59ea01ac03ccdc211&token=ATTA06878f4a0b91dd65a5f3d623b8b47fb802fe06b6b5342e5aea5e0127b39495eb0CC12AC1',\r",
+									"        method: 'DELETE',\r",
+									"        header: {\r",
+									"            'Content-Type': 'application/json'\r",
+									"        },\r",
+									"        body: {\r",
+									"            mode: 'raw',\r",
+									"            raw: JSON.stringify(requestBody)\r",
+									"        }\r",
+									"    }, function (err, response) {\r",
+									"        // Verify the response status code (assuming it should be 400 for bad request)\r",
+									"        pm.test(\"Delete without checkListId : Verify response status code for request missing checkListId\", function () {\r",
+									"            pm.expect(response).to.have.status(404); // Assuming a 404 Not found status code is returned for duplicate name\r",
+									"        });\r",
+									"    });\r",
+									"\r",
+									"    // Send the request to create a new card with missing parameters\r",
+									"    pm.sendRequest({\r",
+									"        url:'https://api.trello.com/1/checklists/65ed510876a2c3b8828c5eca/checkItems/'+ checkItemId +'?key=1c94aec7db5d68c59ea01ac03ccdc211&token=ATTA06878f4a0b91dd65a5f3d623b8b47fb802fe06b6b5342e5aea5e0127b39495eb0CC12AC1',\r",
+									"        method: 'DELETE',\r",
+									"        header: {\r",
+									"            'Content-Type': 'application/json'\r",
+									"        },\r",
+									"        body: {\r",
+									"            mode: 'raw',\r",
+									"            raw: JSON.stringify(requestBody)\r",
+									"        }\r",
+									"    }, function (err, response) {\r",
+									"        // Verify the response status code (assuming it should be 400 for bad request)\r",
+									"        pm.test(\"Delete without checkItemId : Verify response status code for request missing checkItemId\", function () {\r",
+									"            pm.expect(response).to.have.status(404); // Assuming a 404 Not Found status code is returned for duplicate name\r",
+									"        });\r",
+									"    });\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/1/checklists/{{checkList_id}}/checkItems/{{checkItem_id}}?key={{key}}&token={{token}}",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"1",
+								"checklists",
+								"{{checkList_id}}",
+								"checkItems",
+								"{{checkItem_id}}"
+							],
+							"query": [
+								{
+									"key": "key",
+									"value": "{{key}}"
+								},
+								{
+									"key": "token",
+									"value": "{{token}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "2- Delete CheckItem 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Verify the request method is DELETE\r",
+									"pm.test(\"Successful DELETE request\", function () {\r",
+									"    pm.actualMethod = pm.request.method;\r",
+									"    pm.expect(pm.actualMethod).to.eq(\"DELETE\");\r",
+									"});\r",
+									"\r",
+									"// Verify the API Response status code is 200 OK\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Verify the API response is JSON Format\r",
+									"pm.test(\"Content-Type is JSON in header\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\",\"application/json; charset=utf-8\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/1/checklists/{{checkList_id}}/checkItems/{{checkItem_2_id}}?key={{key}}&token={{token}}",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"1",
+								"checklists",
+								"{{checkList_id}}",
+								"checkItems",
+								"{{checkItem_2_id}}"
+							],
+							"query": [
+								{
+									"key": "key",
+									"value": "{{key}}"
+								},
+								{
+									"key": "token",
+									"value": "{{token}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "3- Delete CheckList",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Verify the request method is DELETE\r",
+									"pm.test(\"Successful DELETE request\", function () {\r",
+									"    pm.actualMethod = pm.request.method;\r",
+									"    pm.expect(pm.actualMethod).to.eq(\"DELETE\");\r",
+									"});\r",
+									"\r",
+									"// Verify the API Response status code is 200 OK\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Verify the API response is JSON Format\r",
+									"pm.test(\"Content-Type is JSON in header\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\",\"application/json; charset=utf-8\");\r",
+									"});\r",
+									"\r",
+									"// Test for creating a card with missing required parameters\r",
+									"pm.test(\"Return error for repeat the same delete request again\", function () {\r",
+									"    // Define the request body with missing required parameters\r",
+									"    const requestBody = {\r",
+									"        // Missing required parameters: idList\r",
+									"    };\r",
+									"    var checkListId = '';\r",
+									"    \r",
+									"    // Send the request to create a new card with missing parameters\r",
+									"    pm.sendRequest({\r",
+									"        url:'https://api.trello.com/1/checklists/65ed58bb5c43ffab28c42efe?key=1c94aec7db5d68c59ea01ac03ccdc211&token=ATTA06878f4a0b91dd65a5f3d623b8b47fb802fe06b6b5342e5aea5e0127b39495eb0CC12AC1',\r",
+									"        method: 'POST',\r",
+									"        header: {\r",
+									"            'Content-Type': 'application/json'\r",
+									"        },\r",
+									"        body: {\r",
+									"            mode: 'raw',\r",
+									"            raw: JSON.stringify(requestBody)\r",
+									"        }\r",
+									"    }, function (err, response) {\r",
+									"        // Verify the response status code (assuming it should be 400 for bad request)\r",
+									"        pm.test(\"Delete without checkListId : Verify response status code for request missing checkListId\", function () {\r",
+									"            pm.expect(response).to.have.status(404); // Assuming a 404 Not Found status code is returned for duplicate name\r",
+									"        });\r",
+									"    });\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/1/checklists/{{checkList_id}}?key={{key}}&token={{token}}",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"1",
+								"checklists",
+								"{{checkList_id}}"
+							],
+							"query": [
+								{
+									"key": "key",
+									"value": "{{key}}"
+								},
+								{
+									"key": "token",
+									"value": "{{token}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "4- Delete Card",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Verify the request method is DELETE\r",
+									"pm.test(\"Successful DELETE request\", function () {\r",
+									"    pm.actualMethod = pm.request.method;\r",
+									"    pm.expect(pm.actualMethod).to.eq(\"DELETE\");\r",
+									"});\r",
+									"\r",
+									"// Verify the API Response status code is 200 OK\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Verify the API response is JSON Format\r",
+									"pm.test(\"Content-Type is JSON in header\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\",\"application/json; charset=utf-8\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/1/cards/{{card_id}}?key={{key}}&token={{token}}",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"1",
+								"cards",
+								"{{card_id}}"
+							],
+							"query": [
+								{
+									"key": "key",
+									"value": "{{key}}"
+								},
+								{
+									"key": "token",
+									"value": "{{token}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "5- Delete board 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Verify the request method is DELETE\r",
+									"pm.test(\"Successful DELETE request\", function () {\r",
+									"    pm.actualMethod = pm.request.method;\r",
+									"    pm.expect(pm.actualMethod).to.eq(\"DELETE\");\r",
+									"});\r",
+									"\r",
+									"// Verify the API Response status code is 200 OK\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Verify the API response is JSON Format\r",
+									"pm.test(\"Content-Type is JSON in header\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\",\"application/json; charset=utf-8\");\r",
+									"});\r",
+									"\r",
+									"// Test for creating a card with missing required parameters\r",
+									"pm.test(\"Return error for missing required parameters\", function () {\r",
+									"    // Define the request body with missing required parameters\r",
+									"    const requestBody = {\r",
+									"        // Missing required parameters: idList\r",
+									"    };\r",
+									"    var boardId = '';\r",
+									"    \r",
+									"    // Send the request to create a new card with missing parameters\r",
+									"    pm.sendRequest({\r",
+									"        url:'https://api.trello.com/1/boards/'+boardId+'?key=1c94aec7db5d68c59ea01ac03ccdc211&token=ATTA06878f4a0b91dd65a5f3d623b8b47fb802fe06b6b5342e5aea5e0127b39495eb0CC12AC1',\r",
+									"        method: 'POST',\r",
+									"        header: {\r",
+									"            'Content-Type': 'application/json'\r",
+									"        },\r",
+									"        body: {\r",
+									"            mode: 'raw',\r",
+									"            raw: JSON.stringify(requestBody)\r",
+									"        }\r",
+									"    }, function (err, response) {\r",
+									"        // Verify the response status code (assuming it should be 400 for bad request)\r",
+									"        pm.test(\"Delete without BoardID : Verify response status code for request missing boardId\", function () {\r",
+									"            pm.expect(response).to.have.status(400); // Assuming a 400 Bad Request status code is returned for duplicate name\r",
+									"        });\r",
+									"    });\r",
+									"    // Send the request to delete DuplicatedBoard with missing parameters\r",
+									"    var Duplicated_ID = pm.environment.get(\"DuplicatedID\");\r",
+									"    pm.sendRequest({\r",
+									"        url:'https://api.trello.com/1/boards/'+Duplicated_ID+'?key=1c94aec7db5d68c59ea01ac03ccdc211&token=ATTA06878f4a0b91dd65a5f3d623b8b47fb802fe06b6b5342e5aea5e0127b39495eb0CC12AC1',\r",
+									"        method: 'DELETE',\r",
+									"        header: {\r",
+									"            'Content-Type': 'application/json'\r",
+									"        },\r",
+									"        body: {\r",
+									"            mode: 'raw',\r",
+									"            raw: JSON.stringify(requestBody)\r",
+									"        }\r",
+									"    }, function (err, response) {\r",
+									"        // Verify the response status code (assuming it should be 400 for bad request)\r",
+									"        pm.test(\"Delete Duplicated Board \", function () {\r",
+									"            pm.expect(response).to.have.status(200); // Assuming a 200 status code is returned for duplicate name\r",
+									"        });\r",
+									"    });\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/1/boards/{{board_1_id}}?key={{key}}&token={{token}}",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"1",
+								"boards",
+								"{{board_1_id}}"
+							],
+							"query": [
+								{
+									"key": "key",
+									"value": "{{key}}"
+								},
+								{
+									"key": "token",
+									"value": "{{token}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "6- Delete board 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Verify the request method is DELETE\r",
+									"pm.test(\"Successful DELETE request\", function () {\r",
+									"    pm.actualMethod = pm.request.method;\r",
+									"    pm.expect(pm.actualMethod).to.eq(\"DELETE\");\r",
+									"});\r",
+									"\r",
+									"// Verify the API Response status code is 200 OK\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"// Verify the API response is JSON Format\r",
+									"pm.test(\"Content-Type is JSON in header\", function () {\r",
+									"    pm.response.to.have.header(\"Content-Type\",\"application/json; charset=utf-8\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/1/boards/{{board_2_id}}?key={{key}}&token={{token}}",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"1",
+								"boards",
+								"{{board_2_id}}"
+							],
+							"query": [
+								{
+									"key": "key",
+									"value": "{{key}}"
+								},
+								{
+									"key": "token",
+									"value": "{{token}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
